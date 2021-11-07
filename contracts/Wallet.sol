@@ -1,7 +1,7 @@
 pragma solidity ^0.8.6;
 
 import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contract/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 interface IContractFactory {
     function getSalt(address contractAddress, uint256 tokenId) external returns (bytes32);
@@ -30,10 +30,10 @@ contract Wallet {
     }
 
     function initialize(
-        address _contractFactory,
+        IContractFactory _contractFactory,
         address _contractAddress,
         uint256 _tokenId
-    ) external {
+    ) external payable {
         contractFactory = _contractFactory;
         contractAddress = _contractAddress;
         tokenId = _tokenId;
@@ -69,4 +69,8 @@ contract Wallet {
     ) public returns (bytes4) {
         return ERC721_RECEIVED;
     }
+
+    // This function is called for plain Ether transfers, i.e.
+    // for every call with empty calldata.
+    receive() external payable {}
 }

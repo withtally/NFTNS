@@ -9,29 +9,48 @@ interface IWallet {
         address contractFactory,
         address contractAddress,
         uint256 tokenId
-    ) external;
+    ) external payable;
+
+    function receive() external payable;
 }
 
-contract CloneFactory is Ownable {
+contract NFTSFactory is Ownable {
     using Address for address;
     using Clones for address;
 
     address public implementation; // TODO: Add ability for DAO to add implementations
 
-    event NewWallet(address wallet, address indexed contractAddress, address indexed tokenId);
+    event NewWallet(address wallet, address indexed contractAddress, uint256 indexed tokenId);
+    event NewImplementation(address implementation);
+
+    constructor(address _implementation) {
+        implementation = _implementation;
+    }
 
     /**
      * Public Functions
      */
 
     function deployWallet(address contractAddress, uint256 tokenId) public payable {
+        require(
+            !getWalletAddress(contractAddress, tokenId).isContract(),
+            "NFTNS: err, contract already exists at this address"
+        );
+
         address wallet = implementation.cloneDeterministic(_getSalt(contractAddress, tokenId));
 
-        IWallet(wallet).initialize(address(this), contractAddress, tokenId);
+        IWallet(wallet).initialize{ value: msg.value }(address(this), contractAddress, tokenId);
 
-        // transfer value to the wallet
-        wallet.sendValue(wallet, msg.value);
         emit NewWallet(wallet, contractAddress, tokenId);
+    }
+
+    /**
+     * DAO Functions
+     */
+
+    function updateImplementation(address newImplementation) public onlyOwner {
+        implementation = newImplementation;
+        emit NewImplementation(newImplementation);
     }
 
     /**

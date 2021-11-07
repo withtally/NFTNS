@@ -1,1 +1,2 @@
+import "./NFTSFactory";
 import "./greeter";
