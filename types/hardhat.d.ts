@@ -69,17 +69,9 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Greeter__factory>;
     getContractFactory(
-      name: "ERC20FixedSupply",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ERC20FixedSupply__factory>;
-    getContractFactory(
       name: "MockERC20",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.MockERC20__factory>;
-    getContractFactory(
-      name: "GameItem",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.GameItem__factory>;
     getContractFactory(
       name: "MockERC721",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -164,20 +156,10 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.Greeter>;
     getContractAt(
-      name: "ERC20FixedSupply",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ERC20FixedSupply>;
-    getContractAt(
       name: "MockERC20",
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.MockERC20>;
-    getContractAt(
-      name: "GameItem",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.GameItem>;
     getContractAt(
       name: "MockERC721",
       address: string,
