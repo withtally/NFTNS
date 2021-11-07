@@ -33,6 +33,9 @@ export interface WalletInterface extends ethers.utils.Interface {
     "contractFactory()": FunctionFragment;
     "initialize(address,address,uint256)": FunctionFragment;
     "onERC721Received(address,address,uint256,bytes)": FunctionFragment;
+    "sendERC20(address,address,uint256)": FunctionFragment;
+    "sendERC721(address,address,uint256)": FunctionFragment;
+    "sendEth(address,uint256)": FunctionFragment;
     "tokenId()": FunctionFragment;
   };
 
@@ -60,6 +63,18 @@ export interface WalletInterface extends ethers.utils.Interface {
     functionFragment: "onERC721Received",
     values: [string, string, BigNumberish, BytesLike]
   ): string;
+  encodeFunctionData(
+    functionFragment: "sendERC20",
+    values: [string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "sendERC721",
+    values: [string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "sendEth",
+    values: [string, BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "tokenId", values?: undefined): string;
 
   decodeFunctionResult(
@@ -80,13 +95,22 @@ export interface WalletInterface extends ethers.utils.Interface {
     functionFragment: "onERC721Received",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "sendERC20", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "sendERC721", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "sendEth", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "tokenId", data: BytesLike): Result;
 
   events: {
     "CallExecuted(address,uint256,bytes)": EventFragment;
+    "ERC20Transfered(address,address,uint256)": EventFragment;
+    "ERC721Transfered(address,address,uint256)": EventFragment;
+    "ETHTransfered(address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "CallExecuted"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ERC20Transfered"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ERC721Transfered"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ETHTransfered"): EventFragment;
 }
 
 export type CallExecutedEvent = TypedEvent<
@@ -95,6 +119,28 @@ export type CallExecutedEvent = TypedEvent<
 >;
 
 export type CallExecutedEventFilter = TypedEventFilter<CallExecutedEvent>;
+
+export type ERC20TransferedEvent = TypedEvent<
+  [string, string, BigNumber],
+  { token: string; recipient: string; amount: BigNumber }
+>;
+
+export type ERC20TransferedEventFilter = TypedEventFilter<ERC20TransferedEvent>;
+
+export type ERC721TransferedEvent = TypedEvent<
+  [string, string, BigNumber],
+  { token: string; recipient: string; amount: BigNumber }
+>;
+
+export type ERC721TransferedEventFilter =
+  TypedEventFilter<ERC721TransferedEvent>;
+
+export type ETHTransferedEvent = TypedEvent<
+  [string, BigNumber],
+  { recipient: string; amount: BigNumber }
+>;
+
+export type ETHTransferedEventFilter = TypedEventFilter<ETHTransferedEvent>;
 
 export interface Wallet extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -151,6 +197,26 @@ export interface Wallet extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    sendERC20(
+      token: string,
+      recipient: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    sendERC721(
+      token: string,
+      recipient: string,
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    sendEth(
+      recipient: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     tokenId(overrides?: CallOverrides): Promise<[BigNumber]>;
   };
 
@@ -179,6 +245,26 @@ export interface Wallet extends BaseContract {
     arg1: string,
     arg2: BigNumberish,
     arg3: BytesLike,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  sendERC20(
+    token: string,
+    recipient: string,
+    amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  sendERC721(
+    token: string,
+    recipient: string,
+    tokenId: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  sendEth(
+    recipient: string,
+    amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -213,6 +299,26 @@ export interface Wallet extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
+    sendERC20(
+      token: string,
+      recipient: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    sendERC721(
+      token: string,
+      recipient: string,
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    sendEth(
+      recipient: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     tokenId(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
@@ -227,6 +333,37 @@ export interface Wallet extends BaseContract {
       value?: null,
       data?: null
     ): CallExecutedEventFilter;
+
+    "ERC20Transfered(address,address,uint256)"(
+      token?: string | null,
+      recipient?: string | null,
+      amount?: null
+    ): ERC20TransferedEventFilter;
+    ERC20Transfered(
+      token?: string | null,
+      recipient?: string | null,
+      amount?: null
+    ): ERC20TransferedEventFilter;
+
+    "ERC721Transfered(address,address,uint256)"(
+      token?: string | null,
+      recipient?: string | null,
+      amount?: null
+    ): ERC721TransferedEventFilter;
+    ERC721Transfered(
+      token?: string | null,
+      recipient?: string | null,
+      amount?: null
+    ): ERC721TransferedEventFilter;
+
+    "ETHTransfered(address,uint256)"(
+      recipient?: string | null,
+      amount?: null
+    ): ETHTransferedEventFilter;
+    ETHTransfered(
+      recipient?: string | null,
+      amount?: null
+    ): ETHTransferedEventFilter;
   };
 
   estimateGas: {
@@ -255,6 +392,26 @@ export interface Wallet extends BaseContract {
       arg1: string,
       arg2: BigNumberish,
       arg3: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    sendERC20(
+      token: string,
+      recipient: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    sendERC721(
+      token: string,
+      recipient: string,
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    sendEth(
+      recipient: string,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -287,6 +444,26 @@ export interface Wallet extends BaseContract {
       arg1: string,
       arg2: BigNumberish,
       arg3: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    sendERC20(
+      token: string,
+      recipient: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    sendERC721(
+      token: string,
+      recipient: string,
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    sendEth(
+      recipient: string,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

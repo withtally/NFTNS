@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { Ownable } from "./Ownable";
+export type { IERC20 } from "./IERC20";
 export type { IERC721 } from "./IERC721";
 export type { IERC165 } from "./IERC165";
 export type { IWallet } from "./IWallet";
@@ -12,6 +13,7 @@ export type { IContractFactory } from "./IContractFactory";
 export type { Wallet } from "./Wallet";
 
 export { Ownable__factory } from "./factories/Ownable__factory";
+export { IERC20__factory } from "./factories/IERC20__factory";
 export { IERC721__factory } from "./factories/IERC721__factory";
 export { IERC165__factory } from "./factories/IERC165__factory";
 export { IWallet__factory } from "./factories/IWallet__factory";
