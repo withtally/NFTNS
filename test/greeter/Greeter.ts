@@ -6,7 +6,7 @@ import type { Greeter } from "../../types/Greeter";
 import { Signers } from "../types";
 import { shouldBehaveLikeGreeter } from "./Greeter.behavior";
 
-describe("Unit tests", function () {
+xdescribe("Unit tests", function () {
   before(async function () {
     this.signers = {} as Signers;
 
