@@ -20,6 +20,11 @@ contract NFTSFactory is Ownable {
 
     address public implementation; // TODO: Add ability for DAO to add implementations
 
+    // TODO: have a function that gets this networks CAIP
+    // https://github.com/ChainAgnostic/CAIPs/blob/master/CAIPs/caip-2.md
+
+    string public constant NETWORK_DOMAIN_TYPE = "eip155";
+
     event NewWallet(address wallet, address indexed contractAddress, uint256 indexed tokenId);
     event NewImplementation(address implementation);
 
@@ -65,8 +70,14 @@ contract NFTSFactory is Ownable {
      * Private Functions
      */
 
-    function _getSalt(address _contractAddress, uint256 _tokenId) internal pure returns (bytes32) {
-        return keccak256(abi.encode(_contractAddress, _tokenId));
+    function _getSalt(address _contractAddress, uint256 _tokenId) internal view returns (bytes32) {
+        return keccak256(abi.encode(NETWORK_DOMAIN_TYPE, ":", getChainId(), _contractAddress, _tokenId));
+    }
+
+    function getChainId() private view returns (uint256 chainId) {
+        assembly {
+            chainId := chainid()
+        }
     }
 
     // TODO: Function to check if wallet exists, version,

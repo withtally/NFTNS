@@ -27,6 +27,7 @@ import type {
 
 export interface NFTSFactoryInterface extends ethers.utils.Interface {
   functions: {
+    "NETWORK_DOMAIN_TYPE()": FunctionFragment;
     "deployWallet(address,uint256)": FunctionFragment;
     "getWalletAddress(address,uint256)": FunctionFragment;
     "implementation()": FunctionFragment;
@@ -36,6 +37,10 @@ export interface NFTSFactoryInterface extends ethers.utils.Interface {
     "updateImplementation(address)": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "NETWORK_DOMAIN_TYPE",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "deployWallet",
     values: [string, BigNumberish]
@@ -62,6 +67,10 @@ export interface NFTSFactoryInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "NETWORK_DOMAIN_TYPE",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "deployWallet",
     data: BytesLike
@@ -149,6 +158,8 @@ export interface NFTSFactory extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    NETWORK_DOMAIN_TYPE(overrides?: CallOverrides): Promise<[string]>;
+
     deployWallet(
       contractAddress: string,
       tokenId: BigNumberish,
@@ -179,6 +190,8 @@ export interface NFTSFactory extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
+
+  NETWORK_DOMAIN_TYPE(overrides?: CallOverrides): Promise<string>;
 
   deployWallet(
     contractAddress: string,
@@ -211,6 +224,8 @@ export interface NFTSFactory extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    NETWORK_DOMAIN_TYPE(overrides?: CallOverrides): Promise<string>;
+
     deployWallet(
       contractAddress: string,
       tokenId: BigNumberish,
@@ -268,6 +283,8 @@ export interface NFTSFactory extends BaseContract {
   };
 
   estimateGas: {
+    NETWORK_DOMAIN_TYPE(overrides?: CallOverrides): Promise<BigNumber>;
+
     deployWallet(
       contractAddress: string,
       tokenId: BigNumberish,
@@ -300,6 +317,10 @@ export interface NFTSFactory extends BaseContract {
   };
 
   populateTransaction: {
+    NETWORK_DOMAIN_TYPE(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     deployWallet(
       contractAddress: string,
       tokenId: BigNumberish,
