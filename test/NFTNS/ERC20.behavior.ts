@@ -4,6 +4,8 @@ import type { Artifact } from "hardhat/types";
 
 import type { Wallet } from "../../types/Wallet";
 
+// todo: create mock that simulates reentrancy
+
 export function shouldHandleTokens(): void {
   it("should send and receive ERC20 tokens using convenience function", async function () {
     await this.erc20.connect(this.signers.admin);

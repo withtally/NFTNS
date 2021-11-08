@@ -23,7 +23,7 @@ describe("Unit tests", function () {
     this.signers.admin = signers[0];
   });
 
-  describe("Greeter", function () {
+  describe("NFTNS", function () {
     beforeEach(async function () {
       // Deploy ERC721
       const ERC721Artifact: Artifact = await artifacts.readArtifact("MockERC721");
