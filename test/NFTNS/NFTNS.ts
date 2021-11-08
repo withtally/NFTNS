@@ -9,10 +9,11 @@ import type { MockERC20 } from "../../types/MockERC20";
 import type { MockERC721 } from "../../types/MockERC721";
 
 import { Signers } from "../types";
-// import { expect } from "chai";
+import { expect } from "chai";
 
 // import { shouldBehaveLikeGreeter } from "./Greeter.behavior";
 import { shouldBehaveLikeNFTNS } from "./NFTNS.behavior";
+import { shouldHandleTokens } from "./ERC20.behavior";
 
 describe("Unit tests", function () {
   before(async function () {
@@ -30,7 +31,8 @@ describe("Unit tests", function () {
 
       // Deploy ERC20
       const ERC20Artifact: Artifact = await artifacts.readArtifact("MockERC20");
-      this.erc20 = <MockERC20>await waffle.deployContract(this.signers.admin, ERC20Artifact, []);
+      this.erc20Supply = 1000;
+      this.erc20 = <MockERC20>await waffle.deployContract(this.signers.admin, ERC20Artifact, [this.erc20Supply]);
 
       // Deploy Wallet implementation
       const walletPrototypeArtifact: Artifact = await artifacts.readArtifact("Wallet");
@@ -47,9 +49,9 @@ describe("Unit tests", function () {
     });
 
     shouldBehaveLikeNFTNS();
+    shouldHandleTokens();
 
     // shouldHandleEth();
-    // shouldHandleTokens();
     // shouldHandleNFTs();
   });
 });
