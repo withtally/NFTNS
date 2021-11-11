@@ -14,6 +14,7 @@ import { expect } from "chai";
 // import { shouldBehaveLikeGreeter } from "./Greeter.behavior";
 import { shouldBehaveLikeNFTNS } from "./NFTNS.behavior";
 import { shouldHandleTokens } from "./ERC20.behavior";
+import { shouldHandleNFTS } from "./ERC721.behavior";
 
 describe("Unit tests", function () {
   before(async function () {
@@ -28,6 +29,7 @@ describe("Unit tests", function () {
       // Deploy ERC721
       const ERC721Artifact: Artifact = await artifacts.readArtifact("MockERC721");
       this.erc721 = <MockERC721>await waffle.deployContract(this.signers.admin, ERC721Artifact, []);
+      this.mockERC721 = <MockERC721>await waffle.deployContract(this.signers.admin, ERC721Artifact, []);
 
       // Deploy ERC20
       const ERC20Artifact: Artifact = await artifacts.readArtifact("MockERC20");
@@ -50,6 +52,7 @@ describe("Unit tests", function () {
 
     shouldBehaveLikeNFTNS();
     shouldHandleTokens();
+    shouldHandleNFTS();
 
     // shouldHandleEth();
     // shouldHandleNFTs();

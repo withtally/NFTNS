@@ -12,6 +12,7 @@ declare module "mocha" {
     wallet: Wallet;
     nftns: NFTSFactory;
     erc721: MockERC721;
+    mockERC721: MockERC721;
     erc20: MockERC20;
     erc20Supply: number;
     loadFixture: <T>(fixture: Fixture<T>) => Promise<T>;
