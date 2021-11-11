@@ -28,15 +28,15 @@ import type {
 export interface WalletInterface extends ethers.utils.Interface {
   functions: {
     "ERC721_RECEIVED()": FunctionFragment;
-    "call(address,uint256,bytes)": FunctionFragment;
-    "contractAddress()": FunctionFragment;
+    "call(address,uint256,bytes,uint8,uint256)": FunctionFragment;
     "contractFactory()": FunctionFragment;
     "initialize(address,address,uint256)": FunctionFragment;
     "onERC721Received(address,address,uint256,bytes)": FunctionFragment;
+    "selfContractAddress()": FunctionFragment;
+    "selfTokenId()": FunctionFragment;
     "sendERC20(address,address,uint256)": FunctionFragment;
     "sendERC721(address,address,uint256)": FunctionFragment;
     "sendEth(address,uint256)": FunctionFragment;
-    "tokenId()": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -45,11 +45,7 @@ export interface WalletInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "call",
-    values: [string, BigNumberish, BytesLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "contractAddress",
-    values?: undefined
+    values: [string, BigNumberish, BytesLike, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "contractFactory",
@@ -64,6 +60,14 @@ export interface WalletInterface extends ethers.utils.Interface {
     values: [string, string, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "selfContractAddress",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "selfTokenId",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "sendERC20",
     values: [string, string, BigNumberish]
   ): string;
@@ -75,17 +79,12 @@ export interface WalletInterface extends ethers.utils.Interface {
     functionFragment: "sendEth",
     values: [string, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "tokenId", values?: undefined): string;
 
   decodeFunctionResult(
     functionFragment: "ERC721_RECEIVED",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "call", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "contractAddress",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "contractFactory",
     data: BytesLike
@@ -95,13 +94,20 @@ export interface WalletInterface extends ethers.utils.Interface {
     functionFragment: "onERC721Received",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "selfContractAddress",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "selfTokenId",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "sendERC20", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "sendERC721", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "sendEth", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "tokenId", data: BytesLike): Result;
 
   events: {
-    "CallExecuted(address,uint256,bytes)": EventFragment;
+    "CallExecuted(address,uint256,bytes,uint8,uint256)": EventFragment;
     "ERC20Transfered(address,address,uint256)": EventFragment;
     "ERC721Transfered(address,address,uint256)": EventFragment;
     "ETHTransfered(address,uint256)": EventFragment;
@@ -114,8 +120,14 @@ export interface WalletInterface extends ethers.utils.Interface {
 }
 
 export type CallExecutedEvent = TypedEvent<
-  [string, BigNumber, string],
-  { target: string; value: BigNumber; data: string }
+  [string, BigNumber, string, number, BigNumber],
+  {
+    target: string;
+    value: BigNumber;
+    data: string;
+    operation: number;
+    gas: BigNumber;
+  }
 >;
 
 export type CallExecutedEventFilter = TypedEventFilter<CallExecutedEvent>;
@@ -175,10 +187,10 @@ export interface Wallet extends BaseContract {
       target: string,
       value: BigNumberish,
       data: BytesLike,
+      operation: BigNumberish,
+      txGas: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    contractAddress(overrides?: CallOverrides): Promise<[string]>;
 
     contractFactory(overrides?: CallOverrides): Promise<[string]>;
 
@@ -194,8 +206,12 @@ export interface Wallet extends BaseContract {
       arg1: string,
       arg2: BigNumberish,
       arg3: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    selfContractAddress(overrides?: CallOverrides): Promise<[string]>;
+
+    selfTokenId(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     sendERC20(
       token: string,
@@ -216,8 +232,6 @@ export interface Wallet extends BaseContract {
       amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    tokenId(overrides?: CallOverrides): Promise<[BigNumber]>;
   };
 
   ERC721_RECEIVED(overrides?: CallOverrides): Promise<string>;
@@ -226,10 +240,10 @@ export interface Wallet extends BaseContract {
     target: string,
     value: BigNumberish,
     data: BytesLike,
+    operation: BigNumberish,
+    txGas: BigNumberish,
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  contractAddress(overrides?: CallOverrides): Promise<string>;
 
   contractFactory(overrides?: CallOverrides): Promise<string>;
 
@@ -245,8 +259,12 @@ export interface Wallet extends BaseContract {
     arg1: string,
     arg2: BigNumberish,
     arg3: BytesLike,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  selfContractAddress(overrides?: CallOverrides): Promise<string>;
+
+  selfTokenId(overrides?: CallOverrides): Promise<BigNumber>;
 
   sendERC20(
     token: string,
@@ -268,8 +286,6 @@ export interface Wallet extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  tokenId(overrides?: CallOverrides): Promise<BigNumber>;
-
   callStatic: {
     ERC721_RECEIVED(overrides?: CallOverrides): Promise<string>;
 
@@ -277,10 +293,10 @@ export interface Wallet extends BaseContract {
       target: string,
       value: BigNumberish,
       data: BytesLike,
+      operation: BigNumberish,
+      txGas: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    contractAddress(overrides?: CallOverrides): Promise<string>;
 
     contractFactory(overrides?: CallOverrides): Promise<string>;
 
@@ -298,6 +314,10 @@ export interface Wallet extends BaseContract {
       arg3: BytesLike,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    selfContractAddress(overrides?: CallOverrides): Promise<string>;
+
+    selfTokenId(overrides?: CallOverrides): Promise<BigNumber>;
 
     sendERC20(
       token: string,
@@ -318,20 +338,22 @@ export interface Wallet extends BaseContract {
       amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    tokenId(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   filters: {
-    "CallExecuted(address,uint256,bytes)"(
+    "CallExecuted(address,uint256,bytes,uint8,uint256)"(
       target?: string | null,
       value?: null,
-      data?: null
+      data?: null,
+      operation?: null,
+      gas?: null
     ): CallExecutedEventFilter;
     CallExecuted(
       target?: string | null,
       value?: null,
-      data?: null
+      data?: null,
+      operation?: null,
+      gas?: null
     ): CallExecutedEventFilter;
 
     "ERC20Transfered(address,address,uint256)"(
@@ -373,10 +395,10 @@ export interface Wallet extends BaseContract {
       target: string,
       value: BigNumberish,
       data: BytesLike,
+      operation: BigNumberish,
+      txGas: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    contractAddress(overrides?: CallOverrides): Promise<BigNumber>;
 
     contractFactory(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -392,8 +414,12 @@ export interface Wallet extends BaseContract {
       arg1: string,
       arg2: BigNumberish,
       arg3: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    selfContractAddress(overrides?: CallOverrides): Promise<BigNumber>;
+
+    selfTokenId(overrides?: CallOverrides): Promise<BigNumber>;
 
     sendERC20(
       token: string,
@@ -414,8 +440,6 @@ export interface Wallet extends BaseContract {
       amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    tokenId(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -425,10 +449,10 @@ export interface Wallet extends BaseContract {
       target: string,
       value: BigNumberish,
       data: BytesLike,
+      operation: BigNumberish,
+      txGas: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-
-    contractAddress(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     contractFactory(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -444,8 +468,14 @@ export interface Wallet extends BaseContract {
       arg1: string,
       arg2: BigNumberish,
       arg3: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    selfContractAddress(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    selfTokenId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     sendERC20(
       token: string,
@@ -466,7 +496,5 @@ export interface Wallet extends BaseContract {
       amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-
-    tokenId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

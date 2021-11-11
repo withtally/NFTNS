@@ -57,6 +57,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC165__factory>;
     getContractFactory(
+      name: "ConvenienceFuncs",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ConvenienceFuncs__factory>;
+    getContractFactory(
       name: "IWallet",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IWallet__factory>;
@@ -140,6 +144,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IERC165>;
+    getContractAt(
+      name: "ConvenienceFuncs",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ConvenienceFuncs>;
     getContractAt(
       name: "IWallet",
       address: string,
