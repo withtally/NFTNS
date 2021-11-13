@@ -15,6 +15,7 @@ import { expect } from "chai";
 import { shouldBehaveLikeNFTNS } from "./NFTNS.behavior";
 import { shouldHandleTokens } from "./ERC20.behavior";
 import { shouldHandleNFTS } from "./ERC721.behavior";
+import { shouldUseExector } from "./Execution.behavior";
 
 describe("Unit tests", function () {
   before(async function () {
@@ -50,6 +51,7 @@ describe("Unit tests", function () {
       );
     });
 
+    shouldUseExector();
     shouldBehaveLikeNFTNS();
     shouldHandleTokens();
     shouldHandleNFTS();
