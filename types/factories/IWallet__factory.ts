@@ -31,11 +31,8 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "receive",
-    outputs: [],
     stateMutability: "payable",
-    type: "function",
+    type: "receive",
   },
 ];
 

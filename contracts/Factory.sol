@@ -4,15 +4,8 @@ import "@openzeppelin/contracts/proxy/Clones.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 
-interface IWallet {
-    function initialize(
-        address contractFactory,
-        address contractAddress,
-        uint256 tokenId
-    ) external payable;
-
-    function receive() external payable;
-}
+// Get interface
+import { IWallet } from "./interfaces/IWallet.sol";
 
 contract NFTSFactory is Ownable {
     using Address for address;
@@ -44,7 +37,7 @@ contract NFTSFactory is Ownable {
 
         address wallet = implementation.cloneDeterministic(_getSalt(contractAddress, tokenId));
 
-        IWallet(wallet).initialize{ value: msg.value }(address(this), contractAddress, tokenId);
+        IWallet(payable(wallet)).initialize{ value: msg.value }(address(this), contractAddress, tokenId);
 
         emit NewWallet(wallet, contractAddress, tokenId);
     }

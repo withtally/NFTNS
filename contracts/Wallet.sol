@@ -9,11 +9,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@gnosis.pm/safe-contracts/contracts/base/Executor.sol";
 import "@gnosis.pm/safe-contracts/contracts/common/Enum.sol";
 
-import "hardhat/console.sol";
-
-interface IContractFactory {
-    function getSalt(address contractAddress, uint256 tokenId) external returns (bytes32);
-}
+import { IContractFactory } from "./interfaces/IContractFactory.sol";
 
 contract Wallet is Executor, ConvenienceFuncs, ReentrancyGuard {
     using Address for address;

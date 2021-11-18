@@ -27,17 +27,14 @@ import type {
 export interface IWalletInterface extends ethers.utils.Interface {
   functions: {
     "initialize(address,address,uint256)": FunctionFragment;
-    "receive()": FunctionFragment;
   };
 
   encodeFunctionData(
     functionFragment: "initialize",
     values: [string, string, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "receive", values?: undefined): string;
 
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "receive", data: BytesLike): Result;
 
   events: {};
 }
@@ -75,20 +72,12 @@ export interface IWallet extends BaseContract {
       tokenId: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    receive(
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
   };
 
   initialize(
     contractFactory: string,
     contractAddress: string,
     tokenId: BigNumberish,
-    overrides?: PayableOverrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  receive(
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -99,8 +88,6 @@ export interface IWallet extends BaseContract {
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    receive(overrides?: CallOverrides): Promise<void>;
   };
 
   filters: {};
@@ -112,10 +99,6 @@ export interface IWallet extends BaseContract {
       tokenId: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    receive(
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -123,10 +106,6 @@ export interface IWallet extends BaseContract {
       contractFactory: string,
       contractAddress: string,
       tokenId: BigNumberish,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    receive(
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
